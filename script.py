@@ -10,8 +10,8 @@ from selenium.webdriver.support.ui import Select
 #To be used for later when filling forms and creating a new folder
 month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-#Create a new folder/directory for predicitions for today
-today = datetime.datetime.now()
+#Create a new folder/directory for predicitions for today (Note: Since predicition files are a day ahead, I labeled folders to specify the actual day of the prediction)
+today = datetime.datetime.now() + datetime.timedelta(days=1)
 new_folder_name = month[today.month -1] + str(today.day) + str(today.year)
 path = 'C:\\ShadowBandsResearch\\' + new_folder_name
 
@@ -91,7 +91,7 @@ for x in range(1,13):
     ##############################ASCENT RATE#######################################
     element = driver.find_element_by_id('ascent')
     element.clear() #get rid of pre-existing input
-    element.send_keys('9.5')
+    element.send_keys('6.0')
 
     ##############################BURST ALTITUDE####################################
     element = driver.find_element_by_id('burst')
