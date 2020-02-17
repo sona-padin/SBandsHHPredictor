@@ -2,11 +2,9 @@ import xlrd
 import os
 import datetime
 import glob
+import time
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
 #To be used for later when filling forms and creating a new folder
@@ -113,8 +111,7 @@ for x in range(1,13):
     element = driver.find_element_by_link_text("KML")
     element.click()
 
-#End browser session and dispose chrome webdriver
-driver.quit()
+time.sleep(5) # To fix race condition
 
 #Remove all yellow pins from each of the .kml files
 files = [f for f in glob.glob(path + "**/*.kml", recursive=True)]
@@ -128,7 +125,10 @@ for f in files:
             if(x == 78):
                 file.write('</Document></kml>')
                 file.close()
-            if(x > 78):
-                continue
+                break
             else:
                 file.write(line)
+print("DONE")
+
+#End browser session and dispose chrome webdriver
+driver.quit()
