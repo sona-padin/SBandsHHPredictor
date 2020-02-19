@@ -61,7 +61,7 @@ for x in range(1,13):
     ##############################LAUNCH ALTITUDE#################################
     element = driver.find_element_by_id('initial_alt')
     element.clear() #get rid of pre-existing input
-    element.send_keys('100000')
+    element.send_keys('0')
 
     #############################LAUNCH TIME########################################
     #Read local time from datasheet and tokenize it
@@ -116,6 +116,7 @@ time.sleep(5) # To fix race condition
 #Remove all yellow pins from each of the .kml files
 files = [f for f in glob.glob(path + "**/*.kml", recursive=True)]
 
+#TODO -- rename file for each location
 for f in files:
     with open(f, "r") as file:
         lines = file.readlines()
