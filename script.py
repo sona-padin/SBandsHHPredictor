@@ -1,5 +1,5 @@
 import xlrd
-import os
+import os, fnmatch
 import datetime
 import glob
 import time
@@ -10,6 +10,8 @@ from selenium.webdriver.support.ui import Select
 #To be used for later when filling forms and creating a new folder
 month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+#To store the names of the downloaded KML files. This is a work around to rename the files efficiently
+old_files = []
 #Create a new folder/directory for predicitions for today (Note: Since predicition files are a day ahead, I labeled folders to specify the actual day of the prediction)
 today = datetime.datetime.now() + datetime.timedelta(days=1)
 new_folder_name = month[today.month -1] + str(today.day) + str(today.year)
@@ -109,21 +111,33 @@ for x in range(1,13):
 
     #Download the KML file to Open in Google Earth
     element = driver.find_element_by_link_text("KML")
-    element.click()
+    element.click() #Download file
 
-time.sleep(5) # To fix race condition
+    #Rename KML file to the city which the prediction is based on
+    kml_file_name =(element.get_attribute("href")).split('=')[1]
+    old_file_name = path + '\\' + kml_file_name + '.kml'
+    old_files.append(old_file_name)
+
+time.sleep(5) #Fix race condition
+
+#Rename all files to proper name
+for x, f in enumerate(old_files):
+    new_file_name = path + '\\' + sheet.cell_value((x+1), 0)+ '.kml'
+    try:
+        os.rename(f, new_file_name)
+    except FileNotFoundError:
+        print("Re-run script and delete directory. All prediction files have not successfully downloaded. Note script will continue.")
 
 #Remove all yellow pins from each of the .kml files
 files = [f for f in glob.glob(path + "**/*.kml", recursive=True)]
 
-#TODO -- rename file for each location
 for f in files:
     with open(f, "r") as file:
         lines = file.readlines()
         file.close()
     with open(f, "w") as file:
         for x, line in enumerate(lines):
-            if(x == 78):
+            if(x == 184):
                 file.write('</Document></kml>')
                 file.close()
                 break
