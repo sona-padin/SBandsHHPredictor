@@ -111,14 +111,16 @@ for x in range(1,13):
 
     #Download the KML file to Open in Google Earth
     element = driver.find_element_by_link_text("KML")
-    element.click() #Download file
-
     #Rename KML file to the city which the prediction is based on
     kml_file_name =(element.get_attribute("href")).split('=')[1]
     old_file_name = path + '\\' + kml_file_name + '.kml'
     old_files.append(old_file_name)
+    element.click() #Download file
 
-time.sleep(5) #Fix race condition
+time.sleep(5)
+
+#End browser session and dispose chrome webdriver
+driver.quit()
 
 #Rename all files to proper name
 for x, f in enumerate(old_files):
@@ -137,13 +139,10 @@ for f in files:
         file.close()
     with open(f, "w") as file:
         for x, line in enumerate(lines):
-            if(x == 184):
+            if(x == 183):
                 file.write('</Document></kml>')
                 file.close()
                 break
             else:
                 file.write(line)
 print("DONE")
-
-#End browser session and dispose chrome webdriver
-driver.quit()
