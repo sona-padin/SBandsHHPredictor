@@ -122,27 +122,29 @@ time.sleep(5)
 #End browser session and dispose chrome webdriver
 driver.quit()
 
-#Rename all files to proper name
+#Rename all files to the city in which the prediciton is based on and remove all yellow pins from KML file
 for x, f in enumerate(old_files):
+    location_name = sheet.cell_value((x+1), 0)
     new_file_name = path + '\\' + sheet.cell_value((x+1), 0)+ '.kml'
     try:
         os.rename(f, new_file_name)
+        with open(new_file_name, "r") as file:
+            lines = file.readlines()
+            file.close()
+        with open(new_file_name, "w") as file:
+            for y, line in enumerate(lines):
+                if(y == 4):
+                    a = line.split("<description><![CDATA[Flight data for flight ")
+                    b = a[1].split("<br>")
+                    new_line = "<description><![CDATA[Flight data for flight " + sheet.cell_value((x+1), 0) + " <br>" + b[1]
+                    file.write(new_line)
+                elif(y == 183):
+                    file.write('</Document></kml>')
+                    file.close()
+                    break
+                else:
+                    file.write(line)
     except FileNotFoundError:
         print("Re-run script and delete directory. All prediction files have not successfully downloaded. Note script will continue.")
 
-#Remove all yellow pins from each of the .kml files
-files = [f for f in glob.glob(path + "**/*.kml", recursive=True)]
-
-for f in files:
-    with open(f, "r") as file:
-        lines = file.readlines()
-        file.close()
-    with open(f, "w") as file:
-        for x, line in enumerate(lines):
-            if(x == 183):
-                file.write('</Document></kml>')
-                file.close()
-                break
-            else:
-                file.write(line)
 print("DONE")
